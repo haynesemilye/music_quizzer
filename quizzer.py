@@ -1,30 +1,37 @@
-from flask import Flask
 import random
-from flask import request
+
+from note import Note
+
+from flask import Flask
 from flask import render_template
+from flask import request
 from flask import session
 
 app = Flask(__name__)
+app.secret_key = "super secret key"
+
 
 @app.route('/quizzer', methods=['GET', 'POST'])
 def quizzer():
     return render_template("quizzer_home.html")
 
+
 @app.route('/scales', methods=['POST'])
 def scales():
     return render_template("scale_practice.html")
+
 
 @app.route('/chords', methods=['POST'])
 def chords():
 
     session['chord_list'] = {
-        'A major': 'A C# E',
-        'B major': 'B D# F#',
-        'C major': 'C E G',
-        'D major': 'D F# A',
-        'E major': 'E G# B',
-        'F major': 'F A C',
-        'G major': 'G B D'
+        'A major': [Note.A, Note.C_SHARP, Note.E],
+        'B major': [Note.B, Note.D_SHARP, Note.F_SHARP],
+        'C major': [Note.C, Note.E, Note.G],
+        'D major': [Note.D, Note.F_SHARP, Note.A],
+        'E major': [Note.E, Note.G_SHARP, Note.B],
+        'F major': [Note.F, Note.A, Note.C],
+        'G major': [Note.G, Note.B, Note.D]
     }
 
     chord_list = session.get('chord_list')
@@ -35,16 +42,17 @@ def chords():
 
     return render_template("chord_practice.html", current_chord=current_chord)
 
+
 @app.route('/chord_check', methods=['POST'])
 def check_chords():
-
     chord_list = session.get('chord_list')
     current_chord = session.get('current_chord')
 
     chords_entered = request.form.getlist('note')
     print(*chords_entered, sep='\n')
+    print(*chord_list.get(current_chord), sep='\n')
 
-    if chords_entered == chord_list[current_chord]:
+    if set(chords_entered) == set(chord_list.get(current_chord)):
         return render_template("correct.html", practice="chords")
     else:
         return render_template("incorrect.html")
@@ -128,3 +136,6 @@ def scale_practice():
 #if __name__ == "__main__":
     main()
 '''
+
+if __name__ == "__main__":
+    app.run()
