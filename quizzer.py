@@ -1,11 +1,14 @@
 import random
 
-from note import Note
 
 from flask import Flask
 from flask import render_template
 from flask import request
 from flask import session
+
+from note import Note
+
+import chord_calculator
 
 app = Flask(__name__)
 app.secret_key = "super secret key"
@@ -25,13 +28,13 @@ def scales():
 def chords():
 
     session['chord_list'] = {
-        'A major': [Note.A, Note.C_SHARP, Note.E],
-        'B major': [Note.B, Note.D_SHARP, Note.F_SHARP],
-        'C major': [Note.C, Note.E, Note.G],
-        'D major': [Note.D, Note.F_SHARP, Note.A],
-        'E major': [Note.E, Note.G_SHARP, Note.B],
-        'F major': [Note.F, Note.A, Note.C],
-        'G major': [Note.G, Note.B, Note.D]
+        'A major': [Note.A.value, Note.C_SHARP.value, Note.E.value],
+        'B major': [Note.B.value, Note.D_SHARP.value, Note.F_SHARP.value],
+        'C major': [Note.C.value, Note.E.value, Note.G.value],
+        'D major': [Note.D.value, Note.F_SHARP.value, Note.A.value],
+        'E major': [Note.E.value, Note.G_SHARP.value, Note.B.value],
+        'F major': [Note.F.value, Note.A.value, Note.C.value],
+        'G major': [Note.G.value, Note.B.value, Note.D.value]
     }
 
     chord_list = session.get('chord_list')
@@ -47,6 +50,9 @@ def chords():
 def check_chords():
     chord_list = session.get('chord_list')
     current_chord = session.get('current_chord')
+
+    chord_calculator.calc_major_chord(chord_list.get(current_chord)[0])
+    #print(chord_list.get(current_chord)[0])
 
     chords_entered = request.form.getlist('note')
     print(*chords_entered, sep='\n')

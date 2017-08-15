@@ -1,6 +1,6 @@
-from enum import Enum
+import enum
 
-class Note(Enum):
+class Note(enum.Enum):
     A = "A"
     A_SHARP = "A#"
     B = "B"
